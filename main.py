@@ -10,7 +10,7 @@ class Reward:
         return np.random.normal(self.mean, self.std)
 
 
-class Handle:
+class Arm:
     def __init__(self, reward):
         self.reward = reward
         self.value = 0
@@ -27,37 +27,69 @@ class Handle:
         else:
             self.value = reward
 
-class SlotMachine:
-    def __init__(self, num_of_handles):
-        self.handles = [Handle(Reward(np.random.randint(-2,3), 1)) for i in range(num_of_handles)]
-        self.num_of_handles = num_of_handles
+class Bandit:
+    def __init__(self, num_of_arms, strategy):
+        self.arms = [Arm(Reward(np.random.randint(-2,3), 1)) for i in range(num_of_arms)]
+        self.num_of_arms = num_of_arms
+        self.strategy = strategy
 
-    def pull(self, epsilon=None):
+    ### CHECKPOINTTTT
+    def pull(self):
+        if self.strategy.name == 'epsilon_greedy':
+            pass
+
         if np.random.randint(1,11) <= 1:
-            handle = self.handles[np.random.randint(0,self.num_of_handles)]
+            handle = self.arms[np.random.randint(0,self.num_of_arms)]
         else:
             handle = self.get_handle_with_max()
         return handle.pull()
 
     def get_handle_with_max(self):
-        handles = sorted(self.handles, key = lambda handle: handle.value, reverse=True)
-        return handles[0]
+        arms = sorted(self.arms, key = lambda handle: handle.value, reverse=True)
+        return arms[0]
 
     def explore(self):
         pass
 
+class Strategy:
+    def __init__(self):
+        self.name = None
+
+    def plot_results(self, x, y):
+        plt.plot(np.array(x),np.array(y))
+        plt.show()
+        return
+
+class Greedy(Strategy):
+    # super-init (still not sure what this is)
+    def greedy(self):
+        self.name = 'greedy'
+
+    def optimistic_initial_values(self):
+        self.name = 'optimistic'
+
+class Randomized(Strategy):
+    # super-init (still not sure what this is)
+    def epsilon_greedy(self, bandit, epsilon, num_of_pulls):
+        self.name = 'epsilon_greedy'
+        self.epsilon = epsilon
+        x, y = [],[]
+        total_rewards = 0
+        for step in range(1,num_of_pulls):
+            total_rewards += bandit.pull()
+            if step%10 == 0:
+                x.append(step)
+                y.append(total_rewards/step)
+
+        self.plot_results(x, y)
+        return
+
+    def bernoulli_exploration(self, temperature):
+        self.name = 'bernoulli_exploration'
+        self.temperature = temperature
+
+
+
 if __name__ == '__main__':
-    machine = SlotMachine(10)
-    epsilon = None
-    x, y = [],[]
-    num_steps = 1000
-    total_rewards = 0
-
-    for step in range(1,num_steps):
-        total_rewards += machine.pull()
-        if step%10 == 0:
-            x.append(step)
-            y.append(total_rewards/step)
-
-    plt.plot(np.array(x),np.array(y))
-    plt.show()
+    # Initialize bandit
+    # Initialize strategy
