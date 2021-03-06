@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import math
+from math import sqrt
 
 
 class Gaussian:
@@ -10,16 +9,22 @@ class Gaussian:
          #2: explain the methods
     """
 
-    def __init__(self, p):
-        """summary
+    def __init__(self, mean: float, variance: float) -> None:
+        """Constructor method
 
+        Parameters
+        ----------
+        mean:
+        variance: 
         """
 
-        self.p = p
+        self.mean = mean
+        self.variance = variance
+        self.standard_deviation = sqrt(variance)
 
     def sample(self):
         """summary
 
         """
 
-        pass
+        return np.random.normal(self.mean, self.standard_deviation)
