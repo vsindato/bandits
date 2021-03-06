@@ -1,5 +1,21 @@
+import Reward from reward
+from typing import List
+
+# TODO: Define the Reward type to be enforced in Arm constructor
+
+
 class Arm:
-    def __init__(self, reward) -> None:
+    """Class for a single bandit arm.
+
+    """
+
+    def __init__(self, reward_distribution: Reward) -> None:
+        """ Constructor method
+
+        Args:
+          reward: Reward distribution
+        """
+
         self.reward = reward
         self.value = 0
         self.pull_count = 0
@@ -10,39 +26,49 @@ class Arm:
         return reward
 
     def update_value(self, reward: float) -> None:
-        if self.pull_count > 0:
-            self.value += self.value + \
-                (1/self.pull_count) * (reward - self.value)
-        else:
-            self.value = reward
+        """Update current value estimate of arm instance
+
+        # TODO: Expl. of incremental updates
+
+        Parameters
+        ----------
+        reward: observed reward.
+
+
+        """
+        step_size = 1/self.pull_count if self.pull_count else 1
+        self.value += self.value + step_size * (reward - self.value)
 
     def get_value(self) -> float:
         return self.value
 
 
 class Bandit:
-    def __init__(self, num_of_arms: int, strategy: str):
-        self.arms = [Arm(Reward(np.random.randint(-2, 3), 1))
-                     for i in range(num_of_arms)]
-        self.num_of_arms = num_of_arms
+    def __init__(self, arms: List, strategy: str):
+        """Constructor method
+
+        Parameters
+        ----------
+        arms: A collection of arms to pull/sample from
+        strategy: Sampling strategy
+
+        """
+        self.arms = arms
         self.strategy = strategy
 
-    # CHECKPOINT
     # TODO: Implement cases for different strategies
-    def pull(self) -> float:
-        if self.strategy.name == 'epsilon_greedy':
-            pass
-        # TODO: epsilon-greedy, boltzmann exploration, ucb, bayesian
+    def pick_and_pull(self) -> float:
+        """Select and pull an arm based on strategy
 
-        if np.random.randint(1, 11) <= 1:
-            arm = self.arms[np.random.randint(0, self.num_of_arms)]
-        else:
-            arm = self.get_handle_with_max()
-        return arm.pull()
+        """
+        # TODO: Implement this class as an interface / abstract class.
+        #       interface=bandit; greedy_bandit: class greedy(bandit), randomized: class randomized(bandit)
+        pass
 
-    def get_handle_with_max(self):
-        arms = sorted(self.arms, key=lambda handle: handle.value, reverse=True)
-        return arms[0]
+    def get_max_arm(self):
+        """Return arm with highest estimated value
+
+        """
 
     def explore(self):
         pass
