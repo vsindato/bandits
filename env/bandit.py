@@ -16,35 +16,16 @@ class Arm:
           reward: Reward distribution
         """
 
-        self.reward = reward
-        self.value = 0
+        self.reward_distribution = reward_distribution
         self.pull_count = 0
 
     def pull(self) -> float:
-        reward = self.reward.sample()
-        self.update_value(reward)
+        reward = self.reward_distribution.sample()
         return reward
-
-    def update_value(self, reward: float) -> None:
-        """Update current value estimate of arm instance
-
-        # TODO: Expl. of incremental updates
-
-        Parameters
-        ----------
-        reward: observed reward.
-
-
-        """
-        step_size = 1/self.pull_count if self.pull_count else 1
-        self.value += self.value + step_size * (reward - self.value)
-
-    def get_value(self) -> float:
-        return self.value
 
 
 class Bandit:
-    def __init__(self, arms: List, strategy: str):
+    def __init__(self, arms: List,):
         """Constructor method
 
         Parameters
@@ -54,7 +35,6 @@ class Bandit:
 
         """
         self.arms = arms
-        self.strategy = strategy
 
     # TODO: Implement cases for different strategies
     def pick_and_pull(self) -> float:
@@ -65,10 +45,12 @@ class Bandit:
         #       interface=bandit; greedy_bandit: class greedy(bandit), randomized: class randomized(bandit)
         pass
 
-    def get_max_arm(self):
-        """Return arm with highest estimated value
+    def __len__(self):
+        return len(self.arms)
 
-        """
 
-    def explore(self):
+class Strategy:
+    def __init__(self, bandit: Bandit):
+
+    def step(self):
         pass

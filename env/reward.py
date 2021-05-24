@@ -1,3 +1,4 @@
+# replace these with imports from numpy
 from distributions import gaussian, bernoulli
 
 
