@@ -1,5 +1,5 @@
 from numpy.random import beta as beta_distribution
-
+from strategy.base import Strategy
 
 """
 Thompson sampling (Bernoulli bandit):
@@ -25,21 +25,30 @@ Thompson sampling (Bernoulli bandit):
 # Thompson sampling on bernoulli bandits
 
 
-class ThompsonSampling(Strategy):
+class ThompsonSampler(Strategy):
     # super_initialize
     def __init__(self, bandit, prior_distribution="beta"):
-        super().__init__()
-        # assign priors to each of the arms
-        # can you directly access the variables declared via super_init in init?
+        super().__init__(bandit)
+        # assign priors to each of the arm
+        self.bandit = bandit
         self.priors = [[1, 1]] * len(bandit)
+        self.posteriors = self.priors[:]
+
+    def reset(self):
         self.posteriors = self.priors[:]
 
     def step(self):
         samples = [beta_distribution(alpha, beta)
-                   for alpha, beta in self.priors]
-        samples_max, samples_max_index = max(
-            samples), samples.index(max(samples))
-        reward = bandit.arms[samples_max_index].pull()
+                   for alpha, beta in self.posteriors]
+        samples_max = max(samples)
+        samples_max_index = samples.index(samples_max)
+        reward = self.bandit.get_arms()[samples_max_index].pull()
         alpha, beta = self.posteriors[samples_max_index]
         self.posteriors[samples_max_index] = [
             alpha + reward, beta + 1 - reward]
+
+    def print_posteriors(self):
+        print("Current posteriors: ", self.posteriors)
+
+    def estimated_mean_reward(self):
+        print([(a-1)/(a+b-2) for a, b in self.posteriors])
