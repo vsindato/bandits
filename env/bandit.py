@@ -1,7 +1,5 @@
-import Reward from reward
 from typing import List
-
-# TODO: Define the Reward type to be enforced in Arm constructor
+from numpy.random import binomial, normal
 
 
 class Arm:
@@ -9,23 +7,36 @@ class Arm:
 
     """
 
-    def __init__(self, reward_distribution: Reward) -> None:
+    def __init__(self) -> None:
         """ Constructor method
-
-        Args:
-          reward: Reward distribution
         """
-
-        self.reward_distribution = reward_distribution
         self.pull_count = 0
 
     def pull(self) -> float:
-        reward = self.reward_distribution.sample()
-        return reward
+        pass
+
+
+class Bernoulli(Arm):
+    def __init__(self, param: float):
+        super().__init__()
+        self.param = param
+
+    def pull(self) -> float:
+        return binomial(1, self.param)
+
+
+class Normal(Arm):
+    def __init__(self, mean, std_dev):
+        super().__init__()
+        self.mean = mean
+        self.std_dev = std_dev
+
+    def pull(self) -> float:
+        return normal(self.mean, self.std_dev)
 
 
 class Bandit:
-    def __init__(self, arms: List,):
+    def __init__(self, arms: List):
         """Constructor method
 
         Parameters
@@ -36,21 +47,9 @@ class Bandit:
         """
         self.arms = arms
 
-    # TODO: Implement cases for different strategies
-    def pick_and_pull(self) -> float:
-        """Select and pull an arm based on strategy
-
-        """
-        # TODO: Implement this class as an interface / abstract class.
-        #       interface=bandit; greedy_bandit: class greedy(bandit), randomized: class randomized(bandit)
-        pass
+    # to avoid direct modification of self.arms variable
+    def get_arms(self):
+        return self.arms
 
     def __len__(self):
         return len(self.arms)
-
-
-class Strategy:
-    def __init__(self, bandit: Bandit):
-
-    def step(self):
-        pass
